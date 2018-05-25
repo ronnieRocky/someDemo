@@ -1,0 +1,71 @@
+body{
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.link{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin: 10px;
+  font-family: sans-serif;
+  font-weight: 100;
+  
+  a{
+    color: black;
+    text-decoration: none;
+    
+    &:hover{
+      text-decoration: underline;
+    }
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+#mymask path{
+    stroke-dasharray: 1000px;
+    stroke-dashoffset: 1000px;
+    animation-name: draw;
+    animation-duration: 2s;
+    animation-fill-mode: forwards; // Stay on the last frame
+    animation-iteration-count: 1; // Run only once
+    animation-timing-function: linear;
+  
+  &:nth-child(2) {
+    animation-delay: .2s;
+  }
+  
+  &:nth-child(3) {
+    animation-delay: .4s;
+  }
+  
+  &:nth-child(4) {
+    animation-delay: .6s;
+  }
+  
+  &:nth-child(5) {
+    animation-delay: .8s;
+  }
+  
+  &:nth-child(6) {
+    animation-delay: 1s;
+  }
+  
+  &:nth-child(7) {
+    animation-delay: 1.2s;
+  }
+}
+
+	.st0{fill:none;}
+	.st1{fill:none;stroke:#FFFFFF;stroke-width:7;stroke-miterlimit:10;}
+	.st2{fill:none;stroke:#FFFFFF;stroke-width:8;stroke-miterlimit:10;}
+	.st3{fill:none;stroke:#FFFFFF;stroke-width:13;stroke-miterlimit:10;}
