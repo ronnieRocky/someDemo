@@ -70,17 +70,6 @@
 			
 			}
 
-			// the main update function, called 30 times a second
-
-			function update() {
-
-				updateParticles();
-
-                requestAnimationFrame(update);
-				// and render the scene from the perspective of the camera
-				renderer.render( scene, camera );
-
-			}
 
 			// creates a random field of Particle objects
 			
@@ -136,6 +125,19 @@
 				context.fill();
 			};
 
+						// the main update function, called 30 times a second
+
+			function update() {
+
+				updateParticles();
+
+                requestAnimationFrame(update);
+				// and render the scene from the perspective of the camera
+				renderer.render( scene, camera );
+
+			}
+
+			
 			
 			// moves all the particles dependent on mouse position
 			

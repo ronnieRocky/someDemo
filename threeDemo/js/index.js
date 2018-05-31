@@ -1,3 +1,102 @@
+
+
+class World {
+
+  constructor() {
+    this.particles=[];
+    this.delta = 0;
+
+    this.worldScene = new THREE.Scene();
+    this.worldRenderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true
+    });
+    this.worldRenderer.setClearColor(0x000000);
+    document.body.appendChild(this.worldRenderer.domElement);
+
+    this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 4000);
+    this.worldRenderer.setSize(window.innerWidth, window.innerHeight);
+
+    this.camera.position.z = 0;
+    this.camera.lookAt(new THREE.Vector3(0, 0, -1));
+    var ambientlight = new THREE.AmbientLight(0x777777);
+    this.worldScene.add(ambientlight);
+
+///////////////////////////
+
+for (var p = -1000; p < 1000; p += 10) {
+    var geometry = new THREE.Geometry();
+    var material = new THREE.ParticleBasicMaterial({
+      color: 'yellow',
+      size: 10,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 1,
+      // map: this.canvasMap(),
+    });
+
+      var _x = (-2 * Math.random() +1) *2000;
+      var _y = (-2 * Math.random() +1) *1200;
+      var _z = -1000;
+
+      var vector = new THREE.Vector3(_x, _y, _z);
+      // speed = 0.3 + Math.random() * 0.7;
+      // vert.speed = speed;
+      // vert.baseX = _x;
+
+      geometry.vertices.push(vector);
+      var particle = new THREE.ParticleSystem(geometry, material);
+
+      this.worldScene.add( particle );
+
+  this.particles.push(particle); 
+  this.updateParticles();
+}
+//////////////////////////
+
+
+    this.addText();
+
+    this.renderAnimation();
+  }
+
+  updateParticles() { 
+    // iterate through every particle
+    for(var i=0; i<this.particles.length; i++) {
+
+      var particle = this.particles[i]; 
+
+      // and move it forward dependent on the mouseY position. 
+      //particle.position.z +=  mouseY * 0.01;
+      particle.position.z += Math.random() * 10;
+      // if the particle is too close move it to the back
+      if(particle.position.z>1000) particle.position.z-=2000; 
+    }
+  }
+
+  addText() {
+    this._text = new Text(1);
+    this.worldScene.add(this._text.mesh);
+
+    this._dust = new Dust();
+    // this._dust.mesh.position.y = 344;
+    // this._dust.mesh.position.z = -1000;
+  }
+
+  worldUpdate() {
+    this.delta += 0.1;
+    this.updateParticles();
+    this._text.textUpdate();
+    // this._dust.dustUpdate();
+  }
+
+  renderAnimation() {
+    this.worldUpdate();
+    requestAnimationFrame(this.renderAnimation.bind(this));
+    this.worldRenderer.render(this.worldScene, this.camera);
+  }
+}
+
 class Dust {
   constructor() {
     var mesh,
@@ -10,9 +109,9 @@ class Dust {
       _x,
       _y,
       _z;
-
+  
     this.delta = 0;
-
+  
     geometry = new THREE.Geometry();
     material = new THREE.ParticleBasicMaterial({
       color: 0xFFFFFF,
@@ -21,26 +120,26 @@ class Dust {
       transparent: true,
       opacity: 0.4
     });
-
+  
     for (p = 0; p < 50; p += 1) {
       _x = Math.random() * 800 - 400;
       _y = -500 + Math.random() * 500 - 250;
       _z = -100 + Math.random() * 200;
-
+  
       vert = new THREE.Vector3(_x, _y, _z);
       speed = 0.3 + Math.random() * 0.7;
       vert.speed = speed;
       vert.baseX = _x;
-
+  
       geometry.vertices.push(vert);
     }
-
+  
     mesh = new THREE.ParticleSystem(geometry, material);
     mesh.sortParticles = true;
-
+  
     this.mesh = mesh;
   }
-
+  
   dustUpdate() {
     var p,
       vert;
@@ -49,7 +148,7 @@ class Dust {
     //   vert = this.mesh.geometry.vertices[p];
     //   vert.y += vert.speed;
     //   vert.x = vert.baseX + Math.sin((this.delta * vert.speed) / 100) * 2;
-
+  
     //   if (vert.y > 0) {
     //     vert.y -= 900;
     //   }
@@ -148,10 +247,12 @@ class Beam {
       this.mesh.position.x -= 3500;
     }
 
-    opacity = (this.alternateColor && this.blue || !this.alternateColor && !this.blue) ? 0.2 : 1;
+    // opacity = (this.alternateColor && this.blue || !this.alternateColor && !this.blue) ? 0.2 : 1;
 
-    this.square.material.opacity = hide ? 0 : 0.9 * opacity;
-    this.edges.material.opacity = hide ? 0 : 0.4 * opacity;
+    // this.square.material.opacity = hide ? 0 : 0.9 * opacity;
+    // this.edges.material.opacity = hide ? 0 : 0.4 * opacity;
+    this.square.material.opacity = 0.5;
+    this.edges.material.opacity = 0.5;
   }
 
 }
@@ -174,7 +275,7 @@ class Beams {
         b = false;
       }
 
-      object = new Beam(b);
+      object = new Beam(true);
       this.mesh.add(object.mesh);
       this.shapes.push(object);
     }
@@ -211,7 +312,7 @@ class Text {
     this.text1 = "SS";
     this.text2 = "S";
     this.currentText = 0;
-    this.textArray = [this.text1, this.text2];
+    this.textArray = [this.text1];
     this.textAttributes = [];
 
     this.createScene();
@@ -266,11 +367,17 @@ class Text {
       antialias: true,
       canvas: canvas
     });
-
     this.renderer.setSize(w, h);
 
     this.beams = new Beams();
     this.scene.add(this.beams.mesh);
+
+    // var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
+    // var cubeMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
+    // var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+    
+    // this.scene.add(cube);
 
     this.texture = new THREE.Texture(canvas);
 
@@ -319,7 +426,8 @@ class Text {
       DEG2RAD = Math.PI / 180;
 
     this.ctx.clearRect(0, 0, this.w, this.h);
-    this.currentText = Math.sin(this.delta) > 0 ? 0 : 1;
+    // this.currentText = Math.sin(this.delta) > 0 ? 0 : 1;
+    this.currentText = 0;
 
     len = this.textArray[this.currentText].length;
 
@@ -366,54 +474,5 @@ class Text {
   }
 }
 
-class World {
-
-  constructor() {
-    this.delta = 0;
-
-    this.worldScene = new THREE.Scene();
-    this.worldRenderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true
-    });
-    this.worldRenderer.setClearColor(0x000000);
-    document.body.appendChild(this.worldRenderer.domElement);
-
-    this.camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
-    this.worldRenderer.setSize(window.innerWidth, window.innerHeight);
-
-    var ambientlight = new THREE.AmbientLight(0x777777);
-    this.worldScene.add(ambientlight);
-
-    this.addText();
-
-    this.renderAnimation();
-  }
-
-
-  addText() {
-    this._text = new Text(1);
-    this.worldScene.add(this._text.mesh);
-
-    this._dust = new Dust();
-    this._dust.mesh.position.y = 344;
-    this._dust.mesh.position.z = -1000;
-    this.worldScene.add(this._dust.mesh);
-  }
-
-  worldUpdate() {
-    this.delta += 0.1;
-
-    this._text.textUpdate();
-    this._dust.dustUpdate();
-  }
-
-  renderAnimation() {
-    this.worldUpdate();
-    requestAnimationFrame(this.renderAnimation.bind(this));
-    this.worldRenderer.render(this.worldScene, this.camera);
-  }
-
-}
 
 var _w = new World();
